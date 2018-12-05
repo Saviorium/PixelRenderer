@@ -4,6 +4,8 @@ public class MatrixRenderer implements Runnable {
     private int width, height;
     private int[][] matrix;
     private Thread renderThread;
+    private boolean terminating;
+    private boolean fullImageDelivered;
 
     public MatrixRenderer(int width, int height) {
         this.width = width;
@@ -69,17 +71,41 @@ public class MatrixRenderer implements Runnable {
     }
 
     public void startRender() {
-        if(renderThread.getState() == Thread.State.NEW) {
-            renderThread.start();
-        } else {
+        fullImageDelivered = false;
+        if(renderThread.getState() != Thread.State.NEW) {
             try {
-                renderThread.join(); //TODO: stop thread if needs to resize
+                terminating = true;
+                renderThread.join();
+                terminating = false;
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             renderThread = new Thread(this);
-            renderThread.start();
         }
+        renderThread.start();
+    }
+
+    public boolean isTerminating() {
+        return terminating;
+    }
+
+    public boolean isRunning() {
+        if(renderThread.getState() != Thread.State.TERMINATED) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isImageChanged() {
+        if(fullImageDelivered) {
+            return false;
+        }
+        if(!isRunning()) {
+            fullImageDelivered = true;
+            return true;
+        }
+        return true;
     }
 
     @Override

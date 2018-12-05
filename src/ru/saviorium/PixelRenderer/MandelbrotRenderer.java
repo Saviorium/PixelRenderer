@@ -18,6 +18,9 @@ public class MandelbrotRenderer extends MatrixRenderer {
             int x = 0, y = 0;
             for(int i = x; i < this.getWidth(); i+=step) {
                 for (int j = x; j < y + this.getHeight(); j+=step) {
+                    if(this.isTerminating()) {
+                        return;
+                    }
                     int value = calculate(i, j);
                     fill(value, i, j, step);
                 }

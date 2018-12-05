@@ -27,11 +27,13 @@ public class FractalScreen extends JPanel implements Runnable, ComponentListener
     @Override
     public void run() {
         running = true;
+        long pauseTime;
         while(running) {
             screenRender();
             paintScreen();
+            pauseTime = fractal.isRunning() ? 100 : 500;
             try {
-                Thread.sleep(250); //TODO: add proper time checking
+                Thread.sleep(pauseTime); //TODO: add proper time checking
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -41,6 +43,8 @@ public class FractalScreen extends JPanel implements Runnable, ComponentListener
 
     private void screenRender()
     {
+        if(!fractal.isImageChanged())
+            return;
         if (image == null || resized){
             image = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
             resized = false;
@@ -52,7 +56,8 @@ public class FractalScreen extends JPanel implements Runnable, ComponentListener
                 graphics = image.getGraphics();
         }
         graphics.setColor(Color.ORANGE);
-        graphics.fillRect (0, 0, this.getWidth(), this.getHeight()); //TODO: if Renderer finished, stop refreshing the image
+
+        graphics.fillRect (0, 0, this.getWidth(), this.getHeight());
         for(int i = 0; i < fractal.getWidth(); i++) {
             for(int j = 0; j < fractal.getHeight(); j++) {
                 graphics.setColor(Color.getHSBColor(fractal.getPixel(i, j)/32f, 1f, 0.8f));
@@ -78,6 +83,7 @@ public class FractalScreen extends JPanel implements Runnable, ComponentListener
         resized = true;
         fractal.setSize(this.getWidth(), this.getHeight());
         fractal.startRender();
+        paintScreen();
     }
 
     @Override
