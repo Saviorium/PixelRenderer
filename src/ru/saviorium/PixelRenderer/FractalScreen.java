@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.image.BufferedImage;
 
 public class FractalScreen extends JPanel implements Runnable, ComponentListener {
@@ -14,6 +16,8 @@ public class FractalScreen extends JPanel implements Runnable, ComponentListener
     private Graphics graphics;
     private Image image = null;
     private boolean resized = false;
+
+    private Point mouseFrom;
 
     public FractalScreen() {
         fractal = new MandelbrotRenderer(this.getWidth(), this.getHeight());
@@ -31,7 +35,7 @@ public class FractalScreen extends JPanel implements Runnable, ComponentListener
         while(running) {
             screenRender();
             paintScreen();
-            pauseTime = fractal.isRunning() ? 100 : 500;
+            pauseTime = fractal.isRunning() ? 100 : 100;
             try {
                 Thread.sleep(pauseTime); //TODO: add proper time checking
             } catch (InterruptedException e) {
@@ -99,5 +103,17 @@ public class FractalScreen extends JPanel implements Runnable, ComponentListener
     @Override
     public void componentHidden(ComponentEvent e) {
 
+    }
+
+    public void mousePressed(MouseEvent e) {
+        mouseFrom = e.getPoint();
+    }
+
+    public void mouseReleased(MouseEvent e) {
+        fractal.move(mouseFrom, e.getPoint());
+    }
+
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        fractal.zoom(e.getPoint(), e.getWheelRotation());
     }
 }

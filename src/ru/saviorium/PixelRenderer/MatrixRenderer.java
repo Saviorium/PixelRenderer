@@ -1,5 +1,8 @@
 package ru.saviorium.PixelRenderer;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
+
 public class MatrixRenderer implements Runnable {
     private int width, height;
     private int[][] matrix;
@@ -112,4 +115,8 @@ public class MatrixRenderer implements Runnable {
     public void run() {
 
     }
+
+    public void move(Point from, Point to) {}
+
+    public void zoom(Point pos, int direction) {}
 }

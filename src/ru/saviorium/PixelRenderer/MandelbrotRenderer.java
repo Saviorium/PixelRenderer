@@ -1,5 +1,6 @@
 package ru.saviorium.PixelRenderer;
 
+import java.awt.*;
 import java.awt.geom.Point2D;
 
 public class MandelbrotRenderer extends MatrixRenderer {
@@ -48,5 +49,28 @@ public class MandelbrotRenderer extends MatrixRenderer {
         double posX = (pos.getX() - zoom * ((double)this.getWidth()/this.getHeight())) + (x * unitsPerPixel);
         double posY = (pos.getY() - zoom) + (y * unitsPerPixel);
         return new Point2D.Double(posX, posY);
+    }
+
+    @Override
+    public void move(Point from, Point to) {
+        Point2D fromD = getFromScreenCoord(from.x, from.y);
+        Point2D toD = getFromScreenCoord(to.x, to.y);
+        double dx = toD.getX() - fromD.getX();
+        double dy = toD.getY() - fromD.getY();
+        pos = new Point2D.Double(pos.getX() - dx, pos.getY() - dy);
+        System.out.println(toD);
+        this.startRender();
+    }
+
+    @Override
+    public void zoom(Point screenPosition, int direction) {
+        double zoomUnit = 0.1;
+        Point2D mousePos = getFromScreenCoord(screenPosition.x, screenPosition.y);
+        System.out.println(mousePos + " " + pos);
+        pos = new Point2D.Double(
+                pos.getX() + (mousePos.getX() - pos.getX()) * zoomUnit,
+                pos.getY() + (mousePos.getY() - pos.getY()) * zoomUnit);
+        zoom += direction * zoomUnit;
+        this.startRender();
     }
 }
