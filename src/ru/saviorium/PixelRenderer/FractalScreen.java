@@ -64,7 +64,7 @@ public class FractalScreen extends JPanel implements Runnable, ComponentListener
         graphics.fillRect (0, 0, this.getWidth(), this.getHeight());
         for(int i = 0; i < fractal.getWidth(); i++) {
             for(int j = 0; j < fractal.getHeight(); j++) {
-                graphics.setColor(Color.getHSBColor(fractal.getPixel(i, j)/32f, 1f, 0.8f));
+                graphics.setColor(Color.getHSBColor(fractal.getPixel(i, j)/256f, 1f, 0.8f));
                 graphics.fillRect(i, j,1,1);
             }
         }

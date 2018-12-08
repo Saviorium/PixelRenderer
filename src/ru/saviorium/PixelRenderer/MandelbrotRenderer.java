@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 
 public class MandelbrotRenderer extends MatrixRenderer {
-    private final int MAX_ITERATIONS = 32;
+    private final int MAX_ITERATIONS = 512;
     private Point2D pos = new Point2D.Double(0d, 0d);
     private double zoom = 2d;
 
@@ -39,7 +39,7 @@ public class MandelbrotRenderer extends MatrixRenderer {
             ynew = 2 * xprev * yprev + c.getY();
             xprev = xnew;
             yprev = ynew;
-            if(xnew > 10) return i;
+            if((xnew * xnew + ynew * ynew) > 10) return i;
         }
         return 256;
     }
@@ -66,11 +66,11 @@ public class MandelbrotRenderer extends MatrixRenderer {
     public void zoom(Point screenPosition, int direction) {
         double zoomUnit = 0.1;
         Point2D mousePos = getFromScreenCoord(screenPosition.x, screenPosition.y);
-        System.out.println(mousePos + " " + pos);
         pos = new Point2D.Double(
-                pos.getX() + (mousePos.getX() - pos.getX()) * zoomUnit,
-                pos.getY() + (mousePos.getY() - pos.getY()) * zoomUnit);
-        zoom += direction * zoomUnit;
+                pos.getX() + (mousePos.getX() - pos.getX()) * zoomUnit * -direction,
+                pos.getY() + (mousePos.getY() - pos.getY()) * zoomUnit * -direction);
+        zoom *= 1 + direction * zoomUnit;
+        System.out.println(zoom + " " + pos);
         this.startRender();
     }
 }
