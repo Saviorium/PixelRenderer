@@ -8,12 +8,18 @@ public class MandelbrotRenderer extends MatrixRenderer {
     private Point2D pos = new Point2D.Double(0d, 0d);
     private double zoom = 2d;
 
+    private double unitsPerPixel;
+    private Point2D screenOrigin;
+
     public MandelbrotRenderer(int width, int height) {
         super(width, height);
+        updateCache();
     }
 
     @Override
     public void run() {
+        long start = System.nanoTime();
+        updateCache();
         int step = 32;
         while(step > 0) {
             int x = 0, y = 0;
@@ -28,6 +34,7 @@ public class MandelbrotRenderer extends MatrixRenderer {
             }
             step >>>= 1;
         }
+        System.out.println("Mandelbrot done in " + (System.nanoTime() - start)/1000000d + "ms");
     }
 
     private int calculate(int x, int y) {
@@ -45,9 +52,8 @@ public class MandelbrotRenderer extends MatrixRenderer {
     }
 
     private Point2D getFromScreenCoord(int x, int y) {
-        double unitsPerPixel = (zoom*2)/this.getHeight();
-        double posX = (pos.getX() - zoom * ((double)this.getWidth()/this.getHeight())) + (x * unitsPerPixel);
-        double posY = (pos.getY() - zoom) + (y * unitsPerPixel);
+        double posX = screenOrigin.getX() + (x * unitsPerPixel);
+        double posY = screenOrigin.getY() + (y * unitsPerPixel);
         return new Point2D.Double(posX, posY);
     }
 
@@ -58,7 +64,6 @@ public class MandelbrotRenderer extends MatrixRenderer {
         double dx = toD.getX() - fromD.getX();
         double dy = toD.getY() - fromD.getY();
         pos = new Point2D.Double(pos.getX() - dx, pos.getY() - dy);
-        System.out.println(toD);
         this.startRender();
     }
 
@@ -70,7 +75,13 @@ public class MandelbrotRenderer extends MatrixRenderer {
                 pos.getX() + (mousePos.getX() - pos.getX()) * zoomUnit * -direction,
                 pos.getY() + (mousePos.getY() - pos.getY()) * zoomUnit * -direction);
         zoom *= 1 + direction * zoomUnit;
-        System.out.println(zoom + " " + pos);
         this.startRender();
+    }
+
+    private void updateCache() {
+        unitsPerPixel = (zoom*2)/this.getHeight();
+        double x = pos.getX() - zoom * ((double)this.getWidth()/this.getHeight());
+        double y = pos.getY() - zoom;
+        screenOrigin = new Point2D.Double(x, y);
     }
 }
